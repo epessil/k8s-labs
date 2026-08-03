@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mi-app-config
+data:
+  ENTORNO: "laboratorio"
+  MENSAJE: "config inyectada desde ConfigMap"

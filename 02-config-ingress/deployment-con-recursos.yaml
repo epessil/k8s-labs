@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mi-app
+  labels:
+    app: mi-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mi-app
+  template:
+    metadata:
+      labels:
+        app: mi-app
+    spec:
+      containers:
+        - name: mi-app
+          image: mi-app:2.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          # Prerrequisito del HPA: sin requests, "50% de CPU" no existe
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 128Mi
+          envFrom:
+            - configMapRef:
+                name: mi-app-config
+            - secretRef:
+                name: mi-app-secret
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10

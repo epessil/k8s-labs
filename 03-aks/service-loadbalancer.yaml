@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mi-app-public
+  labels:
+    app: mi-app
+spec:
+  type: LoadBalancer   # AKS: IP publica real en ~14s. kind: <pending> por siempre (no hay LB de nube detras)
+  selector:
+    app: mi-app
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080

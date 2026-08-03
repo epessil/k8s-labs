@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mi-app
+  labels:
+    app: mi-app
+spec:
+  type: ClusterIP
+  selector:
+    app: mi-app
+  ports:
+    - name: http
+      port: 80          # puerto del Service (libre elección)
+      targetPort: 8080  # donde escucha la app (fijado por la app, no negociable)
