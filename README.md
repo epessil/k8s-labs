@@ -23,7 +23,7 @@ Manifiestos reales usados en un clúster local **kind** y en **Azure Kubernetes 
 | [`01-fundamentos/`](01-fundamentos/) | Deployment, Service ClusterIP, rolling updates, rollback | Semana 9 (kind) |
 | [`02-config-ingress/`](02-config-ingress/) | ConfigMap, Secret, HPA, Ingress + **3 postmortems** | Semana 10 (kind) |
 | [`03-aks/`](03-aks/) | LoadBalancer con IP pública, ACR attach, escalado de nodos | Semana 12 (AKS) |
-| [`04-troubleshooting/`](04-troubleshooting/) | Deployment que crashea a propósito + postmortem de `CrashLoopBackOff` | kind |
+| [`04-troubleshooting/`](04-troubleshooting/) | Deployment que crashea a propósito + postmortem y runbook de `CrashLoopBackOff` | kind |
 
 ## Postmortems incluidos
 
