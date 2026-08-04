@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: lab-sre
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crash-demo-v2
+  namespace: lab-sre
+  labels:
+    app: crash-demo-v2
+    env: lab
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: crash-demo-v2
+  template:
+    metadata:
+      labels:
+        app: crash-demo-v2
+    spec:
+      containers:
+      - name: crash-demo-v2
+        image: busybox:latest
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          echo "Iniciando pod $(hostname)..."
+          sleep 5
+          echo "ERROR: falla critica simulada v2 - saliendo con codigo 1"
+          exit 1
+        resources:
+          limits:
+            memory: "64Mi"
+            cpu: "100m"
