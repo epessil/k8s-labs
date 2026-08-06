@@ -35,6 +35,20 @@ Los archivos `INCIDENTE-*.md` documentan fallas reales del laboratorio con forma
 
 Hilo común de los tres: **Kubernetes acepta configuración con referencias rotas sin error en el `apply`** — la verdad vive en `describe` y en la verificación post-cambio, no en el exit code.
 
+## AI-Assisted SRE Tooling
+
+Claude-powered diagnostics and governance built on top of this lab, from a single-shot API call to an autonomous tool-use agent, plus the Claude Code artifacts (subagent, skill, hook) that keep it operating safely.
+
+| Artifact | Description | Tech |
+|---|---|---|
+| [`scripts/claude-api/diagnose-pod.ts`](scripts/claude-api/diagnose-pod.ts) | One-shot diagnosis of a single pod: feeds `kubectl describe` output to Claude and returns root cause, evidence, and remediation. | TypeScript, `@anthropic-ai/sdk`, Claude Sonnet |
+| [`scripts/claude-api/healthcheck-agent.ts`](scripts/claude-api/healthcheck-agent.ts) (v1) | Periodic cluster healthcheck run via crontab: fixed `kubectl` commands collect cluster state, then a single Claude call produces a Markdown report. | TypeScript, `@anthropic-ai/sdk`, Claude Haiku, crontab |
+| [`scripts/claude-api/healthcheck-agent-v2.ts`](scripts/claude-api/healthcheck-agent-v2.ts) | Autonomous healthcheck agent: Claude drives a Tool Use loop (`get_cluster_pods`, `get_pod_logs`, `create_incident`), choosing which tool to call and when, until it decides the healthcheck is complete. | TypeScript, `@anthropic-ai/sdk` Tool Use, Claude Haiku |
+| [`.claude/agents/k8s-diagnostician`](.claude/agents/k8s-diagnostician.md) | Read-only diagnostic subagent for kind cluster incidents (`CrashLoopBackOff`, `Pending`, `ImagePullBackOff`); limited to `get`/`describe`/`logs`/`events`, never remediates on its own. | Claude Code subagent (Bash, Read, Grep, Glob) |
+| [`.claude/skills/sre-runbook`](.claude/skills/sre-runbook.md) | Generates incident runbooks under `04-troubleshooting/` following the project's mandatory 6-section format (Objetivo/Prerequisitos/Procedimiento/Verificación/Rollback/Escalamiento). | Claude Code skill |
+| [`.claude/hooks/check-destructive.sh`](.claude/hooks/check-destructive.sh) | `PreToolUse` safety hook that blocks destructive commands (`kubectl delete/drain/cordon`, `rm -rf`, `pkill`, …) before execution unless explicitly confirmed by the user. | Bash, Claude Code hooks (JSON stdin/stdout) |
+| [`CLAUDE.md`](CLAUDE.md) | Repo-level governance: non-negotiable environment rules, coding conventions, runbook format, and git workflow that all agents, subagents, and hooks must follow. | Claude Code project instructions |
+
 ## Uso rápido (kind)
 
 ```bash
