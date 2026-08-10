@@ -24,6 +24,7 @@ Real manifests used on a local **kind** cluster and on **Azure Kubernetes Servic
 | [`02-config-ingress/`](02-config-ingress/) | ConfigMap, Secret, HPA, Ingress + **3 postmortems** | Week 10 (kind) |
 | [`03-aks/`](03-aks/) | LoadBalancer with public IP, ACR attach, node scaling | Week 12 (AKS) |
 | [`04-troubleshooting/`](04-troubleshooting/) | Deployment that crashes on purpose + postmortem and `CrashLoopBackOff` runbook | kind |
+| [`05-cicd-jenkins-webhook-deploy/`](05-cicd-jenkins-webhook-deploy/) | End-to-end CD: GitHub webhook → Jenkins → build/test/push → automatic deploy to Kubernetes with rollout verification + **3 postmortems** covering 7 chained incidents | Weeks 13–14 (kind + Jenkins) |
 
 ## Included postmortems
 
@@ -32,8 +33,13 @@ The `INCIDENTE-*.md` files document real lab failures using an SRE postmortem fo
 - [`INCIDENTE-hpa-unknown.md`](02-config-ingress/INCIDENTE-hpa-unknown.md) — HPA with `TARGETS <unknown>`: two chained causes (missing metrics-server + undeclared requests)
 - [`INCIDENTE-set-env-silencioso.md`](02-config-ingress/INCIDENTE-set-env-silencioso.md) — `kubectl set env` with two `--from` flags: the last one silently overwrites the previous one
 - [`INCIDENTE-ingress-huerfano.md`](02-config-ingress/INCIDENTE-ingress-huerfano.md) — controller running for 16 days with no rules + an accepted Ingress rule pointing to a nonexistent Service
+- [`INCIDENTE-webhook-github-jenkins.md`](05-cicd-jenkins-webhook-deploy/INCIDENTE-webhook-github-jenkins.md) — GitHub webhook rejected with 403 "No valid crumb", then timing out: CSRF proxy compatibility + wrong payload URL path
+- [`INCIDENTE-jenkins-arranque-y-credenciales.md`](05-cicd-jenkins-webhook-deploy/INCIDENTE-jenkins-arranque-y-credenciales.md) — Jenkins down after a WSL restart, lost admin credential recovered via Groovy script in init.groovy.d, and a credential-ID mismatch breaking the pipeline
+- [`INCIDENTE-red-nombre-puerto-deploy.md`](05-cicd-jenkins-webhook-deploy/INCIDENTE-red-nombre-puerto-deploy.md) — Jenkins blind to the kind cluster (isolated Docker networks → internal kubeconfig), a misreferenced Deployment, and a 5000-vs-8080 port mismatch causing CrashLoopBackOff
 
 Common thread across all three: **Kubernetes accepts configuration with broken references without erroring on `apply`** — the truth lives in `describe` and in post-change verification, not in the exit code.
+
+The `05` series documents 7 chained incidents from a single CD implementation — each fix revealed the next failure. Closing evidence: build #7 green, triggered by `Started by GitHub push`, with the resulting image verified running in the cluster.
 
 ## AI-Assisted SRE Tooling
 
