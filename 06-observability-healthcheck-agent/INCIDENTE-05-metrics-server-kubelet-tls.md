@@ -38,10 +38,15 @@ El agente de healthcheck (`healthcheck-agent-v3.ts`) detectó que `metrics-serve
 
 El flag `--kubelet-insecure-tls` le indica a `metrics-server` que omita esa validación de certificado — aceptable en un laboratorio local, **no** en un clúster productivo con nodos reales expuestos.
 
-**`[POR CONFIRMAR]`** — el historial de bash muestra el mismo patch aplicado dos veces (líneas 959 y 1027), con un `describe pod` de por medio revisando Events. Marca cuál corresponde:
+**Confirmado:** el historial de bash muestra el mismo patch aplicado dos veces (líneas 959 y 1027). 
+La causa es que entre ambos se ejecutó un `kind delete cluster` con reconstrucción completa del 
+ambiente (semanas 1 a 14 del roadmap SRE). El patch de la línea 959 se aplicó sobre el clúster 
+original y se perdió con su eliminación; al recrear el ambiente, `metrics-server` volvió a 
+desplegarse desde el `components.yaml` upstream — sin el flag — y hubo que reaplicarlo (línea 1027).
 
-- [ ] **Hipótesis A**: el primer patch se aplicó correctamente pero el pod tardó en reiniciar / el rollout no había completado aún cuando se revisó; el segundo patch fue redundante (no hizo nada nuevo, el problema ya se estaba resolviendo solo).
-- [ ] **Hipótesis B**: el clúster `kind` fue recreado entre el primer y el segundo patch (o el pod de `metrics-server` fue reprogramado desde el manifest original sin el flag), por lo que el fix del primer patch se perdió y hubo que reaplicarlo. **Esta es la hipótesis más relevante para las acciones correctivas** — ver sección 6.
+Esto no es un fallo del fix, sino de su persistencia: `kubectl patch` modifica el estado vivo del 
+clúster, no el manifest versionado. Todo fix aplicado de forma imperativa desaparece en la siguiente 
+reconstrucción del ambiente.
 
 ## 5. Qué funcionó / qué no funcionó
 
@@ -58,9 +63,9 @@ El flag `--kubelet-insecure-tls` le indica a `metrics-server` que omita esa vali
 
 | Acción | Dueño | Fecha objetivo |
 |---|---|---|
-| Persistir el flag `--kubelet-insecure-tls` en un manifest versionado (patch de kustomize o YAML propio aplicado tras el `kubectl apply` de `components.yaml`), en vez de depender de un `kubectl patch` manual post-hoc | Erick | `[definir]` |
-| (Si aplica hipótesis B) Documentar en el runbook de bootstrap del clúster kind el paso "aplicar metrics-server + patch de TLS" como parte del checklist estándar de reconstrucción, junto a los pasos ya conocidos de reconexión de Jenkins (`docker network connect kind jenkins`, `kind get kubeconfig --internal`) | Erick | `[definir]` |
-| Agregar un check de `metrics-server` (Running + con datos) al script de verificación post-rebuild del clúster, para detectar esto antes de que lo note el HPA o el healthcheck agent | Erick | `[definir]` |
+| Persistir el flag `--kubelet-insecure-tls` en un manifest versionado dentro del repo (copia local de `components.yaml` con el arg incluido, o patch de kustomize aplicado tras el `apply`), eliminando la dependencia del `kubectl patch` manual | Erick | `[definir]` |
+| Crear/actualizar un runbook de bootstrap del clúster kind que consolide TODOS los pasos post-rebuild conocidos: metrics-server + patch TLS, `docker network connect kind jenkins`, `kind get kubeconfig --internal`. Hoy están dispersos entre postmortems distintos y se redescubren por falla | Erick | `[definir]` |
+| Agregar verificación de `metrics-server` (Running + `kubectl top nodes` con datos) al checklist de validación post-rebuild, para detectarlo antes que el HPA o el healthcheck agent | Erick | `[definir]` |
 
 ---
 
