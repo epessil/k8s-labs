@@ -25,6 +25,7 @@ Real manifests used on a local **kind** cluster and on **Azure Kubernetes Servic
 | [`03-aks/`](03-aks/) | LoadBalancer with public IP, ACR attach, node scaling | Week 12 (AKS) |
 | [`04-troubleshooting/`](04-troubleshooting/) | Deployment that crashes on purpose + postmortem and `CrashLoopBackOff` runbook | kind |
 | [`05-cicd-jenkins-webhook-deploy/`](05-cicd-jenkins-webhook-deploy/) | End-to-end CD: GitHub webhook → Jenkins → build/test/push → automatic deploy to Kubernetes with rollout verification + **3 postmortems** covering 7 chained incidents | Weeks 13–14 (kind + Jenkins) |
+| [`06-observability-healthcheck-agent/`](06-observability-healthcheck-agent/) | Observability & healthcheck agents (v1 crontab → v2 Tool Use → v3 Thinking) + **postmortem** on metrics-server TLS in kind | Weeks 10–15 (kind) |
 
 ## Included postmortems
 
@@ -36,6 +37,7 @@ The `INCIDENTE-*.md` files document real lab failures using an SRE postmortem fo
 - [`INCIDENTE-webhook-github-jenkins.md`](05-cicd-jenkins-webhook-deploy/INCIDENTE-webhook-github-jenkins.md) — GitHub webhook rejected with 403 "No valid crumb", then timing out: CSRF proxy compatibility + wrong payload URL path
 - [`INCIDENTE-jenkins-arranque-y-credenciales.md`](05-cicd-jenkins-webhook-deploy/INCIDENTE-jenkins-arranque-y-credenciales.md) — Jenkins down after a WSL restart, lost admin credential recovered via Groovy script in init.groovy.d, and a credential-ID mismatch breaking the pipeline
 - [`INCIDENTE-red-nombre-puerto-deploy.md`](05-cicd-jenkins-webhook-deploy/INCIDENTE-red-nombre-puerto-deploy.md) — Jenkins blind to the kind cluster (isolated Docker networks → internal kubeconfig), a misreferenced Deployment, and a 5000-vs-8080 port mismatch causing CrashLoopBackOff
+- [`INCIDENTE-05-metrics-server-kubelet-tls.md`](06-observability-healthcheck-agent/INCIDENTE-05-metrics-server-kubelet-tls.md) — metrics-server on kind cannot validate the kubelet's self-signed cert: `--kubelet-insecure-tls` required locally (not on AKS/EKS), leaving `kubectl top` empty and HPA at `TARGETS <unknown>`
 
 Common thread across all three: **Kubernetes accepts configuration with broken references without erroring on `apply`** — the truth lives in `describe` and in post-change verification, not in the exit code.
 
