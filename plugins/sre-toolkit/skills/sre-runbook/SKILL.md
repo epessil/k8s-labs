@@ -1,6 +1,6 @@
 ---
 name: sre-runbook
-description: Usar cuando el usuario pida crear, escribir o documentar un runbook, procedimiento operacional, guía de troubleshooting, proceso de mantención o documentación post-incidente de infraestructura (Kubernetes, kind, AKS, VMware/vSphere, Windows Server, Linux). Aplica el estándar de 6 secciones del proyecto k8s-labs. También aplica al documentar la remediación de un incidente ya resuelto.
+description: Usar cuando el usuario pida crear, escribir o documentar un runbook, procedimiento operacional, guia de troubleshooting o proceso de mantencion de infraestructura (Kubernetes, kind, AKS, VMware/vSphere, Windows Server, Linux). Genera documentos preventivos con el estandar de 6 secciones del proyecto. NO usar para documentar incidentes ya ocurridos.
 ---
 
 Cuando generes un runbook con este skill, SIEMPRE sigue estas reglas:
@@ -59,17 +59,3 @@ metrics-server-7f4b6c8d9-x2k4p    1/1     Running   0          2m
 
 Si el comando no produce output en caso de éxito, indicarlo explícitamente con `# (sin output = OK)`.
 
-## Postmortems (variante del runbook)
-
-Cuando lo pedido sea documentar un incidente ya ocurrido (no un procedimiento preventivo), usar
-nombre `INCIDENTE-NN-descripcion.md` con numeración secuencial, y estas secciones en lugar de las 6
-estándar:
-
-1. **Resumen** — qué pasó, en una frase
-2. **Línea de tiempo** — detección, diagnóstico, fix, verificación (con horas)
-3. **Impacto** — qué se degradó y qué NO se vio afectado
-4. **Causa raíz** — el porqué técnico, no el síntoma
-5. **Qué funcionó / qué no funcionó** — separado explícitamente
-6. **Acciones correctivas** — tabla con acción, dueño y fecha objetivo (nunca dejar la fecha en blanco)
-
-Incluir siempre una tabla de metadata al inicio: fecha, severidad, detectado por, cluster afectado, MTTR.
