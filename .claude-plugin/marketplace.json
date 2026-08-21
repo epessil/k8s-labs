@@ -1,0 +1,19 @@
+{
+  "name": "k8s-labs",
+  "owner": {
+    "name": "Erick Diaz"
+  },
+  "metadata": {
+    "description": "Marketplace de plugins SRE derivados de laboratorios reales de Kubernetes, incidentes documentados y automatizacion de operaciones."
+  },
+  "plugins": [
+    {
+      "name": "sre-toolkit",
+      "source": "./plugins/sre-toolkit",
+      "description": "Toolkit SRE para Kubernetes: generacion de runbooks y postmortems con estandar de 6 secciones, diagnostico read-only de clusters, y proteccion contra comandos destructivos.",
+      "version": "1.0.0",
+      "category": "devops",
+      "keywords": ["sre", "kubernetes", "runbooks", "observability", "postmortem"]
+    }
+  ]
+}
