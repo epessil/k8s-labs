@@ -1,6 +1,6 @@
 {
   "name": "sre-toolkit",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Toolkit SRE para Kubernetes: generacion de runbooks y postmortems con estandar de 6 secciones, diagnostico read-only de clusters, y proteccion contra comandos destructivos.",
   "author": {
     "name": "Erick Diaz"
