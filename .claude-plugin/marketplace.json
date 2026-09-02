@@ -11,7 +11,7 @@
       "name": "sre-toolkit",
       "source": "./plugins/sre-toolkit",
       "description": "Toolkit SRE para Kubernetes: generacion de runbooks y postmortems con estandar de 6 secciones, diagnostico read-only de clusters, y proteccion contra comandos destructivos.",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "category": "devops",
       "keywords": ["sre", "kubernetes", "runbooks", "observability", "postmortem"]
     }
